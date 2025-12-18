@@ -39,7 +39,7 @@ function saveQuotes() {
 }
 
 /*************************************************
- * NOTIFICATION
+ * NOTIFICATION HELPER
  *************************************************/
 function notify(message) {
   notification.textContent = message;
@@ -57,6 +57,7 @@ function displayRandomQuote() {
 
   if (filteredQuotes.length === 0) {
     quoteDisplay.textContent = "No quotes available.";
+    notify("No quotes available for the selected category.");
     return;
   }
 
@@ -68,6 +69,7 @@ function displayRandomQuote() {
   notify(`Displayed a random quote from ${randomQuote.category}`);
 }
 
+// Event listener must exist exactly
 newQuoteBtn.addEventListener("click", displayRandomQuote);
 
 /*************************************************
@@ -227,4 +229,5 @@ filterQuotes();
 const lastQuote = sessionStorage.getItem("lastViewedQuote");
 if (lastQuote) {
   quoteDisplay.textContent = `"${lastQuote}"`;
+  notify("Restored last viewed quote.");
 }

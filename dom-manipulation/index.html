@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dynamic Quote Generator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -10,7 +10,7 @@
 
   <h1>Dynamic Quote Generator</h1>
 
-  <!-- Notification Area -->
+  <!-- Notification -->
   <div id="notification"></div>
 
   <!-- Category Filter -->
@@ -23,25 +23,25 @@
   <!-- Show Random Quote -->
   <button id="newQuote">Show New Quote</button>
 
-  <hr />
+  <hr>
 
   <!-- Add Quote -->
-  <input id="newQuoteText" type="text" placeholder="Enter quote text" />
-  <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-  <button onclick="addQuote()">Add Quote</button>
+  <input id="newQuoteText" type="text" placeholder="Enter quote text">
+  <input id="newQuoteCategory" type="text" placeholder="Enter quote category">
+  <button id="addQuoteBtn">Add Quote</button>
 
-  <hr />
+  <hr>
 
   <!-- Export / Import -->
   <button id="exportBtn">Export Quotes</button>
-  <input id="importFile" type="file" accept=".json" />
+  <input id="importFile" type="file" accept=".json">
 
-  <hr />
+  <hr>
 
-  <!-- Manual Sync -->
-  <button onclick="syncQuotes()">Sync With Server</button>
+  <!-- Sync -->
+  <button id="syncBtn">Sync With Server</button>
 
-  <!-- Manual Conflict Resolution -->
+  <!-- Resolve Conflicts -->
   <button id="resolveBtn">Resolve Conflicts Manually</button>
 
   <script src="script.js"></script>

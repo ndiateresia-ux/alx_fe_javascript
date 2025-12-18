@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dynamic Quote Generator</title>
   <link rel="stylesheet" href="styles.css">
-  </style>
 </head>
 <body>
 
@@ -21,20 +20,26 @@
   <!-- Quote Display -->
   <div id="quoteDisplay"></div>
 
-  <button id="newQuoteBtn">Show New Quote</button>
+  <!-- Show Random Quote -->
+  <button id="newQuote">Show New Quote</button>
 
   <hr />
 
   <!-- Add Quote -->
-  <input id="quoteText" type="text" placeholder="Enter quote text" />
-  <input id="quoteCategory" type="text" placeholder="Enter quote category" />
+  <input id="newQuoteText" type="text" placeholder="Enter quote text" />
+  <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
   <button onclick="addQuote()">Add Quote</button>
+
+  <hr />
+
+  <!-- Export / Import -->
+  <button id="exportBtn">Export Quotes</button>
+  <input id="importFile" type="file" accept=".json" />
 
   <hr />
 
   <!-- Manual Sync -->
   <button onclick="syncQuotes()">Sync With Server</button>
-
 
   <!-- Manual Conflict Resolution -->
   <button id="resolveBtn">Resolve Conflicts Manually</button>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Quote Generator</title>
+  <link rel="stylesheet" href="styles.css">
+  </style>
+</head>
+<body>
+
+  <h1>Dynamic Quote Generator</h1>
+
+  <!-- Notification Area -->
+  <div id="notification"></div>
+
+  <!-- Category Filter -->
+  <label>Filter by Category:</label>
+  <select id="categoryFilter"></select>
+
+  <!-- Quote Display -->
+  <div id="quoteDisplay"></div>
+
+  <button id="newQuoteBtn">Show New Quote</button>
+
+  <hr />
+
+  <!-- Add Quote -->
+  <input id="quoteText" type="text" placeholder="Enter quote text" />
+  <input id="quoteCategory" type="text" placeholder="Enter quote category" />
+  <button onclick="addQuote()">Add Quote</button>
+
+  <hr />
+
+  <!-- Manual Sync -->
+  <button onclick="syncQuotes()">Sync With Server</button>
+
+
+  <!-- Manual Conflict Resolution -->
+  <button id="resolveBtn">Resolve Conflicts Manually</button>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,70 +1,75 @@
 /*************************************************
  * STORAGE KEYS
  *************************************************/
-const QUOTE_KEY = "quotes";
-const FILTER_KEY = "categoryFilter";
+const QUOTES_KEY = "quotes";
+const CATEGORY_KEY = "selectedCategory";
 
 /*************************************************
- * QUOTES ARRAY (REQUIRED)
- * ✔ text
- * ✔ category
+ * QUOTES ARRAY
  *************************************************/
-let quotes = JSON.parse(localStorage.getItem(QUOTE_KEY)) || [
+let quotes = JSON.parse(localStorage.getItem(QUOTES_KEY)) || [
   { text: "Code is like humor.", category: "Programming" },
   { text: "Simplicity is the soul of efficiency.", category: "Programming" },
   { text: "Believe you can and you're halfway there.", category: "Motivation" }
 ];
 
 /*************************************************
- * DOM REFERENCES
+ * SELECTED CATEGORY
+ *************************************************/
+let selectedCategory = localStorage.getItem(CATEGORY_KEY) || "all";
+
+/*************************************************
+ * DOM ELEMENTS
  *************************************************/
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
 const categoryFilter = document.getElementById("categoryFilter");
+const addQuoteBtn = document.getElementById("addQuoteBtn");
 const exportBtn = document.getElementById("exportBtn");
 const importFile = document.getElementById("importFile");
 const notification = document.getElementById("notification");
+const syncBtn = document.getElementById("syncBtn");
+const resolveBtn = document.getElementById("resolveBtn");
 
 /*************************************************
- * LOCAL STORAGE
+ * SAVE QUOTES TO LOCAL STORAGE
  *************************************************/
 function saveQuotes() {
-  localStorage.setItem(QUOTE_KEY, JSON.stringify(quotes));
+  localStorage.setItem(QUOTES_KEY, JSON.stringify(quotes));
 }
 
 /*************************************************
- * ✔ displayRandomQuote
- * ✔ random selection
- * ✔ DOM update
- * ✔ sessionStorage
+ * DISPLAY RANDOM QUOTE
  *************************************************/
 function displayRandomQuote() {
-  if (quotes.length === 0) return;
+  const filteredQuotes =
+    selectedCategory === "all"
+      ? quotes
+      : quotes.filter(q => q.category === selectedCategory);
 
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
+  if (filteredQuotes.length === 0) {
+    quoteDisplay.textContent = "No quotes available.";
+    return;
+  }
 
-  quoteDisplay.textContent = `"${quote.text}"`;
-  sessionStorage.setItem("lastViewedQuote", quote.text);
+  const randomQuote =
+    filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)];
+
+  quoteDisplay.textContent = `"${randomQuote.text}"`;
+  sessionStorage.setItem("lastViewedQuote", randomQuote.text);
 }
 
-/*************************************************
- * ✔ EVENT LISTENER — Show New Quote
- *************************************************/
 newQuoteBtn.addEventListener("click", displayRandomQuote);
 
 /*************************************************
- * ✔ addQuote
- * ✔ updates array
- * ✔ updates DOM
- * ✔ saves to localStorage
+ * ADD QUOTE
  *************************************************/
 function addQuote() {
   const text = document.getElementById("newQuoteText").value;
   const category = document.getElementById("newQuoteCategory").value;
 
   if (!text || !category) {
-    alert("Please fill in all fields");
+    alert("All fields are required.");
     return;
   }
 
@@ -72,14 +77,16 @@ function addQuote() {
   saveQuotes();
   populateCategories();
   filterQuotes();
+  notify("Quote added successfully.");
 
   document.getElementById("newQuoteText").value = "";
   document.getElementById("newQuoteCategory").value = "";
 }
 
+addQuoteBtn.addEventListener("click", addQuote);
+
 /*************************************************
- * ✔ populateCategories
- * ✔ unique categories
+ * POPULATE CATEGORIES
  *************************************************/
 function populateCategories() {
   categoryFilter.innerHTML = "";
@@ -93,27 +100,23 @@ function populateCategories() {
     categoryFilter.appendChild(option);
   });
 
-  const saved = localStorage.getItem(FILTER_KEY);
-  if (saved) categoryFilter.value = saved;
+  const savedCategory = localStorage.getItem(CATEGORY_KEY);
+  if (savedCategory) categoryFilter.value = savedCategory;
 }
 
 /*************************************************
- * ✔ filterQuotes
- * ✔ filtering logic
- * ✔ DOM update
- * ✔ localStorage save
+ * FILTER QUOTES
  *************************************************/
 function filterQuotes() {
-  const selected = categoryFilter.value;
-  localStorage.setItem(FILTER_KEY, selected);
-
-  quoteDisplay.innerHTML = "";
+  selectedCategory = categoryFilter.value;
+  localStorage.setItem(CATEGORY_KEY, selectedCategory);
 
   const filtered =
-    selected === "all"
+    selectedCategory === "all"
       ? quotes
-      : quotes.filter(q => q.category === selected);
+      : quotes.filter(q => q.category === selectedCategory);
 
+  quoteDisplay.innerHTML = "";
   filtered.forEach(q => {
     const p = document.createElement("p");
     p.textContent = `"${q.text}"`;
@@ -124,45 +127,41 @@ function filterQuotes() {
 categoryFilter.addEventListener("change", filterQuotes);
 
 /*************************************************
- * ✔ exportToJsonFile
+ * EXPORT TO JSON FILE
  *************************************************/
 function exportToJsonFile() {
   const data = JSON.stringify(quotes, null, 2);
   const blob = new Blob([data], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = "quotes.json";
   a.click();
-
   URL.revokeObjectURL(url);
 }
 
 exportBtn.addEventListener("click", exportToJsonFile);
 
 /*************************************************
- * ✔ importFromJsonFile
+ * IMPORT FROM JSON FILE
  *************************************************/
 function importFromJsonFile(event) {
   const reader = new FileReader();
-
   reader.onload = function (e) {
     const importedQuotes = JSON.parse(e.target.result);
     quotes.push(...importedQuotes);
     saveQuotes();
     populateCategories();
     filterQuotes();
+    notify("Quotes imported successfully.");
   };
-
   reader.readAsText(event.target.files[0]);
 }
 
 importFile.addEventListener("change", importFromJsonFile);
 
 /*************************************************
- * ✔ fetchQuotesFromServer
- * ✔ mock API
+ * FETCH QUOTES FROM SERVER
  *************************************************/
 async function fetchQuotesFromServer() {
   const response = await fetch(
@@ -177,9 +176,9 @@ async function fetchQuotesFromServer() {
 }
 
 /*************************************************
- * ✔ post quotes to server (mock)
+ * POST QUOTES TO SERVER
  *************************************************/
-async function postQuotesToServer(quote) {
+async function postQuoteToServer(quote) {
   await fetch("https://jsonplaceholder.typicode.com/posts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -188,15 +187,13 @@ async function postQuotesToServer(quote) {
 }
 
 /*************************************************
- * ✔ syncQuotes
- * ✔ conflict resolution (server wins)
- * ✔ localStorage update
+ * SYNC QUOTES
  *************************************************/
 async function syncQuotes() {
   const serverQuotes = await fetchQuotesFromServer();
 
   serverQuotes.forEach(sq => {
-    if (!quotes.some(q => q.text === sq.text)) {
+    if (!quotes.some(q => q.text === sq.text && q.category === sq.category)) {
       quotes.push(sq);
     }
   });
@@ -204,10 +201,18 @@ async function syncQuotes() {
   saveQuotes();
   populateCategories();
   filterQuotes();
-  notification.textContent = "Data synced with server";
+  notify("Data synced with server.");
 }
 
-setInterval(syncQuotes, 30000);
+syncBtn.addEventListener("click", syncQuotes);
+
+/*************************************************
+ * NOTIFICATION HELPER
+ *************************************************/
+function notify(message) {
+  notification.textContent = message;
+  setTimeout(() => (notification.textContent = ""), 4000);
+}
 
 /*************************************************
  * INITIAL LOAD
